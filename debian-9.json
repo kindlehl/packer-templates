@@ -1,0 +1,43 @@
+{
+  "variables": {
+    "name": "debian-9"
+  },
+
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "source_path": "/home/kindlehl/images/test-debian-9.ovf",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "boot_wait": "20s",
+      "shutdown_command": "sudo -S shutdown -P now"
+    }
+  ],
+	"provisioners": [
+   {
+     "type": "chef-solo",
+     "cookbook_paths": "/home/kindlehl/setup/chef-repo/cookbooks",
+     "environments_path": "/home/kindlehl/setup/chef-repo/environments",
+     "chef_environment": "test",
+     "run_list": ["base"]
+   }
+  ],
+  "post-processors": [
+    {
+      "type": "shell-local",
+      "inline": [
+        "rm -rf /home/kindlehl/.vagrant.d/boxes/{{user `name`}}.box"
+      ]
+    },
+    {
+      "type": "vagrant",
+      "output": "/home/kindlehl/.vagrant.d/boxes/{{user `name`}}.box"
+    },
+    {
+      "type": "shell-local",
+      "inline": [
+        "rm -rf /home/kindlehl/setup/packer/output-virtualbox-ovf"
+      ]
+    }
+  ]
+}
